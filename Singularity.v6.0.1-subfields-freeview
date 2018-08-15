@@ -1,0 +1,93 @@
+Bootstrap: docker
+From: ubuntu:trusty
+
+
+%setup
+
+cp run.py $SINGULARITY_ROOTFS/run.py
+chmod +x $SINGULARITY_ROOTFS/run.py
+
+cp version $SINGULARITY_ROOTFS/version
+
+
+%post
+apt-get update \
+    && apt-get install -y wget
+wget -qO- https://surfer.nmr.mgh.harvard.edu/pub/dist/freesurfer/6.0.1/freesurfer-Linux-centos6_x86_64-stable-pub-v6.0.1.tar.gz | tar zxv --no-same-owner -C /opt \
+    --exclude='freesurfer/trctrain' \
+    --exclude='freesurfer/subjects/fsaverage_sym' \
+    --exclude='freesurfer/subjects/fsaverage3' \
+    --exclude='freesurfer/subjects/fsaverage4' \
+    --exclude='freesurfer/subjects/fsaverage5' \
+    --exclude='freesurfer/subjects/fsaverage6' \
+    --exclude='freesurfer/subjects/cvs_avg35' \
+    --exclude='freesurfer/subjects/cvs_avg35_inMNI152' \
+    --exclude='freesurfer/subjects/bert' \
+    --exclude='freesurfer/subjects/V1_average' \
+    --exclude='freesurfer/average/mult-comp-cor' 
+
+
+apt-get install -y python3
+apt-get install -y python3-pip
+pip3 install nibabel pandas
+apt-get install -y python2.7
+apt-get install -y python-pip
+
+apt-get install -y tcsh
+apt-get install -y bc
+apt-get install -y tar libgomp1 perl-modules
+
+apt-get install -y curl
+curl -sL https://deb.nodesource.com/setup_6.x | bash -
+apt-get install -y nodejs
+npm install -g bids-validator@0.19.8
+
+cd /opt/freesurfer
+#get matlab MCR for hippocampal subfield segmentation
+curl "https://surfer.nmr.mgh.harvard.edu/fswiki/MatlabRuntime?action=AttachFile&do=get&target=runtime2012bLinux.tar.gz" -o "runtime.tar.gz"
+tar xvf runtime.tar.gz
+rm runtime.tar.gz
+
+#extra libraries for MCR (hipp subfields)
+apt-get install -y libxt6 libxmu6 libsm6 libice6
+
+#dependencies for freeview
+apt-get install -y libglu1-mesa libfreetype6 libxrender1 libfontconfig1 libglib2.0-0 libxss1 libxft2 libjpeg62
+
+mkdir /scratch
+mkdir /local-scratch
+
+
+%environment
+
+# Configure environment
+export FSLDIR=/usr/share/fsl/5.0
+export FSLOUTPUTTYPE=NIFTI_GZ
+export PATH=/usr/lib/fsl/5.0:$PATH
+export FSLMULTIFILEQUIT=TRUE
+export POSSUMDIR=/usr/share/fsl/5.0
+export LD_LIBRARY_PATH=/usr/lib/fsl/5.0:$LD_LIBRARY_PATH
+export FSLTCLSH=/usr/bin/tclsh
+export FSLWISH=/usr/bin/wish
+export FSLOUTPUTTYPE=NIFTI_GZ
+
+export OS=Linux
+export FS_OVERRIDE=0
+export FIX_VERTEX_AREA=
+export SUBJECTS_DIR=/opt/freesurfer/subjects
+export FSF_OUTPUT_FORMAT=nii.gz
+export MNI_DIR=/opt/freesurfer/mni
+export LOCAL_DIR=/opt/freesurfer/local
+export FREESURFER_HOME=/opt/freesurfer
+export FSFAST_HOME=/opt/freesurfer/fsfast
+export MINC_BIN_DIR=/opt/freesurfer/mni/bin
+export MINC_LIB_DIR=/opt/freesurfer/mni/lib
+export MNI_DATAPATH=/opt/freesurfer/mni/data
+export FMRI_ANALYSIS_DIR=/opt/freesurfer/fsfast
+export PERL5LIB=/opt/freesurfer/mni/lib/perl5/5.8.5
+export MNI_PERL5LIB=/opt/freesurfer/mni/lib/perl5/5.8.5
+export PATH=/opt/freesurfer/bin:/opt/freesurfer/fsfast/bin:/opt/freesurfer/tktools:/opt/freesurfer/mni/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+export PYTHONPATH=""
+
+%runscript 
+/run.py $@

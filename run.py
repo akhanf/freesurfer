@@ -58,7 +58,7 @@ parser.add_argument('--session_label', help='The label of the session that shoul
 parser.add_argument('--n_cpus', help='Number of CPUs/cores available to use.',
                     default=1, type=int)
 parser.add_argument('--stages', help='Autorecon stages to run.',
-                    choices=["autorecon1", "autorecon2", "autorecon2-cp", "autorecon2-wm", "autorecon-pial", "autorecon3", "autorecon-all", "all"],
+                    choices=["autorecon1", "autorecon2", "autorecon2-cp", "autorecon2-wm", "autorecon-pial", "autorecon3", "autorecon-all", "all","hippocampal-subfields-T1"],
                     default=["autorecon-all"],
                     nargs="+")
 parser.add_argument('--steps', help='Longitudinal pipeline steps to run.',
