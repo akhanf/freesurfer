@@ -111,8 +111,6 @@ parser.add_argument('--3T',
                     help='enables the two 3T specific options that recon-all supports: nu intensity correction params, and the special schwartz atlas',
                     choices = ['true', 'false'],
                     default = 'true')
-
-
 args = parser.parse_args()
 
 
@@ -241,12 +239,12 @@ if args.analysis_level == "participant":
                                     input_args += " " + " ".join(["-FLAIR %s" % FLAIR])
                                     input_args += " -FLAIRpial"
 
-                        if args.hippocampal-subfields == 'T2'
+                        if args.hippocampal-subfields == 'T1T2'
                             for T2 in T2s:
                                 if max(nibabel.load(T2).header.get_zooms()) < 1.2:
-                                    input_args += " --hippocampal-subfields-T2"
+                                    input_args += " -hippocampal-subfields-T1T2"
                                     input_args += " " + " ".join(["%s" % T2])
-                        %TODO: add exception for using T1 and T1T2
+                        %TODO: add exception for using only T1 and only T2
 
                         fsid = "sub-%s_ses-%s" % (subject_label, session_label)
                         stages = " ".join(["-" + stage for stage in args.stages])
@@ -365,12 +363,12 @@ if args.analysis_level == "participant":
                             input_args += " " + " ".join(["-FLAIR %s" % FLAIR])
                             input_args += " -FLAIRpial"
 
-                if args.hippocampal-subfields == 'T2'
+                if args.hippocampal-subfields == 'T1T2'
                     for T2 in T2s:
                         if max(nibabel.load(T2).header.get_zooms()) < 1.2:
-                            input_args += " --hippocampal-subfields-T2"
+                            input_args += " -hippocampal-subfields-T2"
                             input_args += " " + " ".join(["%s" % T2])
-                %TODO: add exception for using T1 and T1T2
+                %TODO: add exception for using only T1 and only T2
 
                 fsid = "sub-%s" % subject_label
                 stages = " ".join(["-" + stage for stage in args.stages])
@@ -436,12 +434,12 @@ if args.analysis_level == "participant":
                         input_args += " " + " ".join(["-FLAIR %s" % FLAIR])
                         input_args += " -FLAIRpial"
 
-            if args.hippocampal-subfields == 'T2'
+            if args.hippocampal-subfields == 'T1T2'
                 for T2 in T2s:
                     if max(nibabel.load(T2).header.get_zooms()) < 1.2:
-                        input_args += " --hippocampal-subfields-T2"
+                        input_args += " -hippocampal-subfields-T1T2"
                         input_args += " " + " ".join(["%s" % T2])
-            %TODO: add exception for using T1 and T1T2
+            %TODO: add exception for using only T1 and only T2
 
             fsid = "sub-%s" % subject_label
             stages = " ".join(["-" + stage for stage in args.stages])
