@@ -58,7 +58,7 @@ parser.add_argument('--session_label', help='The label of the session that shoul
 parser.add_argument('--n_cpus', help='Number of CPUs/cores available to use.',
                     default=1, type=int)
 parser.add_argument('--stages', help='Autorecon stages to run.',
-                    choices=["autorecon1", "autorecon2", "autorecon2-cp", "autorecon2-wm", "autorecon-pial", "autorecon3", "autorecon-all", "all","hippocampal-subfields-T1"],
+                    choices=["autorecon1", "autorecon2", "autorecon2-cp", "autorecon2-wm", "autorecon-pial", "autorecon3", "autorecon-all", "all"],
                     default=["autorecon-all"],
                     nargs="+")
 parser.add_argument('--steps', help='Longitudinal pipeline steps to run.',
@@ -94,6 +94,11 @@ parser.add_argument('--measurements', help='Group2 option: cortical measurements
                              "curvind"],
                     default=["thickness"],
                     nargs="+")
+parser.add_argument('--hippocampal-subfields',
+                    help='perform subfield segmentation using additional T2w image'),
+                    choices=['T1', 'T2', 'T1T2'],
+                    default=['T1T2']
+#TODO: add_argument(--hippocampal-subfields_acquisition_label) (analogous to --refine_pial_acquisition_label)
 
 parser.add_argument('-v', '--version', action='version',
                     version='BIDS-App example version {}'.format(__version__))
@@ -219,7 +224,7 @@ if args.analysis_level == "participant":
 
                         T2s = glob(os.path.join(args.bids_dir, "sub-%s" % subject_label,
                                                 "ses-%s" % session_label, "anat",
-                                                "*%s_T2w.nii*" % acq_t2))
+                                                "*%s_T2w*" % acq_t2)) #removed .nii to make this more general
                         FLAIRs = glob(os.path.join(args.bids_dir, "sub-%s" % subject_label,
                                                    "ses-%s" % session_label, "anat",
                                                    "*%s_FLAIR.nii*" % acq_t2))
@@ -233,6 +238,21 @@ if args.analysis_level == "participant":
                                 if max(nibabel.load(FLAIR).header.get_zooms()) < 1.2:
                                     input_args += " " + " ".join(["-FLAIR %s" % FLAIR])
                                     input_args += " -FLAIRpial"
+
+                        if args.hippocampal-subfields == 'T1T2'
+                            for T2 in T2s:
+                                if max(nibabel.load(T2).header.get_zooms()) < 1.2:
+                                    input_args += " -hippocampal-subfields-T1T2"
+                                    input_args += " " + " ".join(["%s" % T2])
+                        elif args.hippocampal-subfields == 'T1'
+                            for T2 in T2s:
+                                if max(nibabel.load(T2).header.get_zooms()) < 1.2:
+                                    input_args += " -hippocampal-subfields-T1"
+                        elif args.hippocampal-subfields == 'T2'
+                            for T2 in T2s:
+                                if max(nibabel.load(T2).header.get_zooms()) < 1.2:
+                                    input_args += " -hippocampal-subfields-T2"
+                                    input_args += " " + " ".join(["%s" % T2])
 
                         fsid = "sub-%s_ses-%s" % (subject_label, session_label)
                         stages = " ".join(["-" + stage for stage in args.stages])
@@ -351,6 +371,21 @@ if args.analysis_level == "participant":
                             input_args += " " + " ".join(["-FLAIR %s" % FLAIR])
                             input_args += " -FLAIRpial"
 
+                if args.hippocampal-subfields == 'T1T2'
+                    for T2 in T2s:
+                        if max(nibabel.load(T2).header.get_zooms()) < 1.2:
+                            input_args += " -hippocampal-subfields-T1T2"
+                            input_args += " " + " ".join(["%s" % T2])
+                elif args.hippocampal-subfields == 'T1'
+                    for T2 in T2s:
+                        if max(nibabel.load(T2).header.get_zooms()) < 1.2:
+                            input_args += " -hippocampal-subfields-T1"
+                elif args.hippocampal-subfields == 'T2'
+                    for T2 in T2s:
+                        if max(nibabel.load(T2).header.get_zooms()) < 1.2:
+                            input_args += " -hippocampal-subfields-T2"
+                            input_args += " " + " ".join(["%s" % T2])
+
                 fsid = "sub-%s" % subject_label
                 stages = " ".join(["-" + stage for stage in args.stages])
 
@@ -414,6 +449,21 @@ if args.analysis_level == "participant":
                     if max(nibabel.load(FLAIR).header.get_zooms()) < 1.2:
                         input_args += " " + " ".join(["-FLAIR %s" % FLAIR])
                         input_args += " -FLAIRpial"
+
+            if args.hippocampal-subfields == 'T1T2'
+                for T2 in T2s:
+                    if max(nibabel.load(T2).header.get_zooms()) < 1.2:
+                        input_args += " -hippocampal-subfields-T1T2"
+                        input_args += " " + " ".join(["%s" % T2])
+            if args.hippocampal-subfields == 'T1'
+                for T2 in T2s:
+                    if max(nibabel.load(T2).header.get_zooms()) < 1.2:
+                        input_args += " -hippocampal-subfields-T1"
+            if args.hippocampal-subfields == 'T2'
+                for T2 in T2s:
+                    if max(nibabel.load(T2).header.get_zooms()) < 1.2:
+                        input_args += " -hippocampal-subfields-T2"
+                        input_args += " " + " ".join(["%s" % T2])
 
             fsid = "sub-%s" % subject_label
             stages = " ".join(["-" + stage for stage in args.stages])

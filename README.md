@@ -36,6 +36,7 @@ This App has the following command line arguments:
                       [--refine_pial_acquisition_label REFINE_PIAL_ACQUISITION_LABEL]
                       [--multiple_sessions {longitudinal,multiday}]
                       [--refine_pial {T2,FLAIR,None,T1only}]
+                      [--hippocampal-subfields {T1T2,T2,T1}]
                       [--hires_mode {auto,enable,disable}]
                       [--parcellations {aparc,aparc.a2009s} [{aparc,aparc.a2009s} ...]]
                       [--measurements {area,volume,thickness,thicknessstd,meancurv,gauscurv,foldind,curvind}
@@ -98,6 +99,9 @@ This App has the following command line arguments:
                                 If the dataset contains multiple T2 or FLAIR weighted
                                 images from different acquisitions which one should be
                                 used? Corresponds to "acq-<acquisition_label>"
+          --hippocampal-subfields {T1T2,T2,T1}
+                                Use atlas-based template registration to segment 
+                                hippocampal subfields. Uses same T2 as refine_pial
           --multiple_sessions {longitudinal,multiday}
                                 For datasets with multiday sessions where you do not
                                 want to use the longitudinal pipeline, i.e., sessions
